@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Location Details</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 650px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f4f7fb;
+            color: #222;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #176b45;
+        }
+
+        button {
+            background: #176b45;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:disabled {
+            background: #888;
+            cursor: wait;
+        }
+
+        .detail {
+            margin: 16px 0;
+            padding: 12px;
+            background: #f0f5f2;
+            border-radius: 6px;
+            overflow-wrap: anywhere;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        #status {
+            margin-top: 18px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>GPS Location Details</h1>
+
+        <p>
+            Click the button to retrieve your device's location.
+            Your coordinates will be displayed in this browser and
+            will not be sent to the FastAPI backend.
+        </p>
+
+        <button id="locationButton" onclick="getLocation()">
+            Get My Location
+        </button>
+
+        <div id="results" hidden>
+            <div class="detail">
+                <span class="label">Latitude:</span>
+                <span id="latitude"></span>
+            </div>
+
+            <div class="detail">
+                <span class="label">Longitude:</span>
+                <span id="longitude"></span>
+            </div>
+
+            <div class="detail">
+                <span class="label">Accuracy:</span>
+                <span id="accuracy"></span>
+            </div>
+
+            <div class="detail">
+                <span class="label">Timestamp:</span>
+                <span id="timestamp"></span>
+            </div>
+        </div>
+
+        <p id="status" role="status">
+            Waiting for your permission to access location.
+        </p>
+    </div>
+
+    <script>
+        function getLocation() {
+            const button = document.getElementById("locationButton");
+            const status = document.getElementById("status");
+            const results = document.getElementById("results");
+
+            if (!navigator.geolocation) {
+                status.textContent =
+                    "Geolocation is not supported by this browser.";
+                return;
+            }
+
+            button.disabled = true;
+            status.textContent = "Retrieving your location...";
+            results.hidden = true;
+
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    const accuracy = position.coords.accuracy;
+
+                    // Display details locally. No fetch(), POST, or API call.
+                    document.getElementById("latitude").textContent =
+                        latitude.toFixed(7);
+
+                    document.getElementById("longitude").textContent =
+                        longitude.toFixed(7);
+
+                    document.getElementById("accuracy").textContent =
+                        "Approximately " + Math.round(accuracy) + " metres";
+
+                    document.getElementById("timestamp").textContent =
+                        new Date(position.timestamp).toLocaleString();
+
+                    results.hidden = false;
+                    status.textContent =
+                        "Location retrieved successfully. No coordinates were sent to FastAPI.";
+
+                    button.disabled = false;
+                },
+                function (error) {
+                    const messages = {
+                        1: "Location permission was denied. Allow location access in your browser settings.",
+                        2: "Your location is currently unavailable. Check your device's location settings.",
+                        3: "The location request timed out. Please try again."
+                    };
+
+                    status.textContent =
+                        messages[error.code] || "Unable to retrieve your location.";
+
+                    button.disabled = false;
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 20000,
+                    maximumAge: 0
+                }
+            );
+        }
+    </script>
+</body>
+</html>

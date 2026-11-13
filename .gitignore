@@ -1,33 +1,26 @@
-tests/logs/
-data/
-__pycache__
-logs/
-submission/
-.vscode/
-results/
-logs_old/
-build/
-weights/
-inference_imagery/
-ftw_tools.egg-info/
-*.ckpt
-*.aux.xml
-*.gpkg
-.pytest_cache/
-/results.csv
-/austria_example_output_full.gpkg
-/austria_example_output_full.tif
-/dist
-/weights/
-/.ruff_cache/
-/.pixi/
-.DS_Store
-
-# Python virtual environments
-venv/
+# Python environment
 .venv/
-env/
-ENV/
+__pycache__/
 *.pyc
-*.pyo
-*.egg-info/
+
+# Jupyter temporary files
+.ipynb_checkpoints/
+
+# FTW generated outputs
+ftw_output/
+gps_ftw_output/
+gps_test_output/
+
+# Satellite imagery and downloads
+preprocessed_satellite/
+satellite_preprocessing/
+sentinel2_downloads/
+
+# Large generated files
+*.tif
+*.tiff
+*.jp2
+*.part
+
+# Temporary logs
+*.log
